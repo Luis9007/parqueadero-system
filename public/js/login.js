@@ -1,5 +1,5 @@
-// Función para mostrar alertas con SweetAlert2
-function mostrarAlerta(mensaje, tipo = 'error') {
+// Función para mostrar alertas centradas con animación
+function mostrarAlerta(mensaje, tipo = 'error', callback = null) {
     let icon;
     switch(tipo) {
         case 'success':
@@ -18,11 +18,19 @@ function mostrarAlerta(mensaje, tipo = 'error') {
     Swal.fire({
         icon: icon,
         title: mensaje,
-        timer: 2500,
-        showConfirmButton: false,
-        timerProgressBar: true,
-        position: 'top-end',
-        toast: true
+        showConfirmButton: true,
+        confirmButtonText: 'Aceptar',
+        showClass: {
+            popup: 'swal2-show swal2-animate__animated swal2-animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'swal2-hide swal2-animate__animated swal2-animate__fadeOutUp'
+        },
+        backdrop: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+    }).then(() => {
+        if (callback) callback();
     });
 }
 
@@ -51,27 +59,27 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const data = await response.json();
         
         if (response.ok) {
-            // Login exitoso
-            mostrarAlerta('¡Inicio de sesión exitoso!', 'success');
-            
-            // Redirigir según el rol
-            setTimeout(() => {
+            // Login exitoso: alerta centrada con animación
+            mostrarAlerta('¡Inicio de sesión exitoso!', 'success', () => {
                 if (data.usuario.rol === 'Administrador') {
                     window.location.href = '/dashboard-admin.html';
                 } else {
                     window.location.href = '/dashboard-operario.html';
                 }
-            }, 500);
+            });
         } else {
             // Credenciales inválidas o error del servidor
-            mostrarAlerta(data.error || 'Error al iniciar sesión', 'error');
-            btnLogin.disabled = false;
-            btnLogin.textContent = 'Iniciar Sesión';
+            mostrarAlerta(data.error || 'Error al iniciar sesión', 'error', () => {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Iniciar Sesión';
+            });
         }
     } catch (error) {
         console.error('Error:', error);
-        mostrarAlerta('Error de conexión con el servidor', 'error');
-        btnLogin.disabled = false;
-        btnLogin.textContent = 'Iniciar Sesión';
+        mostrarAlerta('Error de conexión con el servidor', 'error', () => {
+            btnLogin.disabled = false;
+            btnLogin.textContent = 'Iniciar Sesión';
+        });
     }
 });
+
