@@ -31,14 +31,39 @@ document.getElementById('btnLogout').addEventListener('click', async () => {
 });
 
 // Mostrar alertas
-function mostrarAlerta(mensaje, tipo = 'info') {
-    const container = document.getElementById('alertContainer');
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${tipo}`;
-    alert.textContent = mensaje;
-    container.innerHTML = '';
-    container.appendChild(alert);
-    setTimeout(() => alert.remove(), 5000);
+function mostrarAlerta(mensaje, tipo = 'error', callback = null) {
+    let icon;
+    switch(tipo) {
+        case 'success':
+            icon = 'success';
+            break;
+        case 'warning':
+            icon = 'warning';
+            break;
+        case 'info':
+            icon = 'info';
+            break;
+        default:
+            icon = 'error';
+    }
+
+    Swal.fire({
+        icon: icon,
+        title: mensaje,
+        showConfirmButton: true,
+        confirmButtonText: 'Aceptar',
+        showClass: {
+            popup: 'swal2-show swal2-animate__animated swal2-animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'swal2-hide swal2-animate__animated swal2-animate__fadeOutUp'
+        },
+        backdrop: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+    }).then(() => {
+        if (callback) callback();
+    });
 }
 
 // Mostrar secciones
@@ -372,4 +397,5 @@ cargarDisponibilidad();
 cargarTarifas();
 
 // Actualizar disponibilidad cada 30 segundos
+
 setInterval(cargarDisponibilidad, 30000);
