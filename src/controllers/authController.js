@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt');
 const db = require('../config/database');
 
 // Iniciar sesión
@@ -37,7 +36,7 @@ const login = async (req, res) => {
         }
 
         // Verificar contraseña
-        const passwordValido = await bcrypt.compare(password, usuario.password_hash);
+        const passwordValido = password === usuario.password_hash;
 
         if (!passwordValido) {
             return res.status(401).json({ 
@@ -92,4 +91,5 @@ module.exports = {
     login,
     logout,
     obtenerUsuarioActual
+
 };
