@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Operario - Sistema Parqueadero</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">🚗 Sistema Parqueadero</div>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <div class="user-role" id="userRole"></div>
+                </div>
+                <button class="btn btn-danger btn-sm" id="btnLogout">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Estadísticas -->
+        <div class="dashboard-grid">
+            <div class="stat-card success" id="statSedanes">
+                <div class="stat-label">Sedanes Disponibles</div>
+                <div class="stat-value">-</div>
+            </div>
+            <div class="stat-card warning" id="statCamionetas">
+                <div class="stat-label">Camionetas Disponibles</div>
+                <div class="stat-value">-</div>
+            </div>
+            <div class="stat-card" id="statMotos">
+                <div class="stat-label">Motos Disponibles</div>
+                <div class="stat-value">-</div>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div id="alertContainer"></div>
+
+        <!-- Botones de acción -->
+        <div class="card">
+            <div class="button-grid">
+                <button class="btn btn-success btn-lg" id="btnRegistrarEntrada">
+                    ➕ Registrar Entrada
+                </button>
+                <button class="btn btn-primary btn-lg" id="btnRegistrarSalida">
+                    ➖ Registrar Salida
+                </button>
+                <button class="btn btn-secondary btn-lg" id="btnVerVehiculos">
+                    📋 Vehículos Dentro
+                </button>
+            </div>
+        </div>
+
+        <!-- Vehículos en curso -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Vehículos en el Parqueadero</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Tipo</th>
+                            <th>Espacio</th>
+                            <th>Entrada</th>
+                            <th>Tiempo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehiculosTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center">Cargando...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Entrada -->
+    <div id="modalEntrada" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Entrada de Vehículo</h3>
+                <button class="modal-close" onclick="cerrarModalEntrada()">&times;</button>
+            </div>
+            <form id="formEntrada">
+                <div class="form-group">
+                    <label class="form-label" for="placaEntrada">Placa del Vehículo</label>
+                    <input 
+                        type="text" 
+                        id="placaEntrada" 
+                        class="form-control" 
+                        placeholder="ABC123"
+                        required
+                        style="text-transform: uppercase;"
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tipoVehiculoEntrada">Tipo de Vehículo</label>
+                    <select id="tipoVehiculoEntrada" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                    </select>
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Registrar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalEntrada()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Salida -->
+    <div id="modalSalida" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Salida de Vehículo</h3>
+                <button class="modal-close" onclick="cerrarModalSalida()">&times;</button>
+            </div>
+            <form id="formBuscarVehiculo">
+                <div class="form-group">
+                    <label class="form-label" for="placaSalida">Placa del Vehículo</label>
+                    <input 
+                        type="text" 
+                        id="placaSalida" 
+                        class="form-control" 
+                        placeholder="ABC123"
+                        required
+                        style="text-transform: uppercase;"
+                    >
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Buscar Vehículo</button>
+            </form>
+
+            <div id="infoCobro" class="hidden" style="margin-top: 20px;">
+                <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Información del Cobro</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><strong>Placa:</strong></div>
+                        <div id="infoPlaca">-</div>
+                        <div><strong>Tipo:</strong></div>
+                        <div id="infoTipo">-</div>
+                        <div><strong>Espacio:</strong></div>
+                        <div id="infoEspacio">-</div>
+                        <div><strong>Entrada:</strong></div>
+                        <div id="infoEntrada">-</div>
+                        <div><strong>Salida:</strong></div>
+                        <div id="infoSalida">-</div>
+                        <div><strong>Tiempo Total:</strong></div>
+                        <div id="infoTiempo">-</div>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #d1d5db;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2563eb;">
+                            Total a Pagar: $<span id="infoValor">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="descuento">Descuento (opcional)</label>
+                    <input 
+                        type="number" 
+                        id="descuento" 
+                        class="form-control" 
+                        placeholder="0"
+                        min="0"
+                        step="100"
+                    >
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success" onclick="confirmarSalida()" style="flex: 1;">
+                        Confirmar Salida y Cobro
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalSalida()">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ticket -->
+    <div id="modalTicket" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✅ Ticket de Salida</h3>
+                <button class="modal-close" onclick="cerrarModalTicket()">&times;</button>
+            </div>
+            <div id="ticketContent" style="background: #f9fafb; padding: 20px; border-radius: 8px; font-family: monospace;">
+                <!-- El contenido del ticket se generará dinámicamente -->
+            </div>
+            <div class="d-flex gap-2 mt-2">
+                <button type="button" class="btn btn-primary" onclick="imprimirTicket()" style="flex: 1;">
+                    🖨️ Imprimir Ticket
+                </button>
+                <button type="button" class="btn btn-success" onclick="descargarTicket()" style="flex: 1;">
+                    📄 Descargar PDF
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalTicket()">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante WhatsApp -->
+    <a href="https://wa.me/573001234567?text=Hola,%20tengo%20una%20pregunta%20sobre%20el%20parqueadero" 
+       class="whatsapp-float" 
+       target="_blank"
+       title="Contactar por WhatsApp">
+        💬
+    </a>
+
+    <script src="/js/operario.js"></script>
+</body>
+</html>

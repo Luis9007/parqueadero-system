@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador - Sistema Parqueadero</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">🚗 Sistema Parqueadero - Admin</div>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <div class="user-role" id="userRole"></div>
+                </div>
+                <button class="btn btn-danger btn-sm" id="btnLogout">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Estadísticas -->
+        <div class="dashboard-grid">
+            <div class="stat-card success">
+                <div class="stat-label">Sedanes Disponibles</div>
+                <div class="stat-value" id="statSedanes">-</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-label">Camionetas Disponibles</div>
+                <div class="stat-value" id="statCamionetas">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Motos Disponibles</div>
+                <div class="stat-value" id="statMotos">-</div>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div id="alertContainer"></div>
+
+        <!-- Pestañas -->
+        <div class="card">
+            <div style="display: flex; gap: 10px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="mostrarSeccion('tarifas')">Gestión de Tarifas</button>
+                <button class="btn btn-secondary" onclick="mostrarSeccion('usuarios')">Gestión de Usuarios</button>
+            </div>
+
+            <!-- Sección Tarifas -->
+            <div id="seccionTarifas">
+                <div class="card-header d-flex justify-between align-center">
+                    <h2 class="card-title">Tarifas Configuradas</h2>
+                    <button class="btn btn-success" onclick="abrirModalTarifa()">+ Nueva Tarifa</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tipo Vehículo</th>
+                                <th>Nombre</th>
+                                <th>Tipo Cobro</th>
+                                <th>Valor</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tarifasTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección Usuarios -->
+            <div id="seccionUsuarios" class="hidden">
+                <div class="card-header d-flex justify-between align-center">
+                    <h2 class="card-title">Usuarios del Sistema</h2>
+                    <button class="btn btn-success" onclick="abrirModalUsuario()">+ Nuevo Usuario</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuariosTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tarifa -->
+    <div id="modalTarifa" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTarifaTitulo">Nueva Tarifa</h3>
+                <button class="modal-close" onclick="cerrarModalTarifa()">&times;</button>
+            </div>
+            <form id="formTarifa">
+                <input type="hidden" id="tarifaId">
+                <div class="form-group">
+                    <label class="form-label" for="tipoVehiculo">Tipo de Vehículo</label>
+                    <select id="tipoVehiculo" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="nombreTarifa">Nombre de la Tarifa</label>
+                    <input type="text" id="nombreTarifa" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tipoCobro">Tipo de Cobro</label>
+                    <select id="tipoCobro" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                        <option value="POR_MINUTO">Por Minuto</option>
+                        <option value="POR_HORA">Por Hora</option>
+                        <option value="POR_DIA">Por Día</option>
+                        <option value="FRACCION">Por Fracción (15 min)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="valorTarifa">Valor ($)</label>
+                    <input type="number" id="valorTarifa" class="form-control" min="0" step="100" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fechaInicio">Fecha Inicio</label>
+                    <input type="date" id="fechaInicio" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fechaFin">Fecha Fin (opcional)</label>
+                    <input type="date" id="fechaFin" class="form-control">
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalTarifa()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Usuario -->
+    <div id="modalUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalUsuarioTitulo">Nuevo Usuario</h3>
+                <button class="modal-close" onclick="cerrarModalUsuario()">&times;</button>
+            </div>
+            <form id="formUsuario">
+                <input type="hidden" id="usuarioId">
+                <div class="form-group">
+                    <label class="form-label" for="nombreUsuario">Nombre Completo</label>
+                    <input type="text" id="nombreUsuario" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="emailUsuario">Email</label>
+                    <input type="email" id="emailUsuario" class="form-control" required>
+                </div>
+                <div class="form-group" id="passwordGroup">
+                    <label class="form-label" for="passwordUsuario">Contraseña</label>
+                    <input type="password" id="passwordUsuario" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="rolUsuario">Rol</label>
+                    <select id="rolUsuario" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="activoUsuario" checked>
+                        Usuario Activo
+                    </label>
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalUsuario()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botón flotante WhatsApp -->
+    <a href="https://wa.me/573001234567?text=Hola,%20tengo%20una%20pregunta%20sobre%20el%20parqueadero" 
+       class="whatsapp-float" 
+       target="_blank"
+       title="Contactar por WhatsApp">
+        💬
+    </a>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
