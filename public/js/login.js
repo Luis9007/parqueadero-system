@@ -1,15 +1,29 @@
-// Función para mostrar alertas
+// Función para mostrar alertas con SweetAlert2
 function mostrarAlerta(mensaje, tipo = 'error') {
-    const container = document.getElementById('alertContainer');
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${tipo}`;
-    alert.textContent = mensaje;
-    container.innerHTML = '';
-    container.appendChild(alert);
-    
-    setTimeout(() => {
-        alert.remove();
-    }, 5000);
+    let icon;
+    switch(tipo) {
+        case 'success':
+            icon = 'success';
+            break;
+        case 'warning':
+            icon = 'warning';
+            break;
+        case 'info':
+            icon = 'info';
+            break;
+        default:
+            icon = 'error';
+    }
+
+    Swal.fire({
+        icon: icon,
+        title: mensaje,
+        timer: 2500,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        position: 'top-end',
+        toast: true
+    });
 }
 
 // Manejar el formulario de login
@@ -49,6 +63,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 }
             }, 500);
         } else {
+            // Credenciales inválidas o error del servidor
             mostrarAlerta(data.error || 'Error al iniciar sesión', 'error');
             btnLogin.disabled = false;
             btnLogin.textContent = 'Iniciar Sesión';
