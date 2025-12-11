@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { verificarAutenticacion } = require('../middleware/authmiddleware');
+const { verificarAutenticacion } = require('../middleware/authMiddleware');
 
 // Rutas públicas
 router.post('/login', authController.login);
@@ -12,3 +12,4 @@ router.get('/me', verificarAutenticacion, authController.obtenerUsuarioActual);
 
 
 module.exports = router;
+
